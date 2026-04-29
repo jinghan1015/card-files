@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>卡片</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
+
+    body {
+      padding: 20px;
+      background: #f5f5f5
+    }
+
+    .title {
+      font-size: 22px;
+      font-weight: bold;
+      margin-bottom: 10px
+    }
+
+    .content {
+      background: #fff;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      white-space: pre-wrap
+    }
+
+    img {
+      width: 100%;
+      border-radius: 10px;
+      margin: 5px 0
+    }
+
+    audio,
+    video {
+      width: 100%;
+      margin: 5px 0;
+      border-radius: 10px
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+
+  <script src="https://res.wx.qq.com/open/js/cloudbase/1.1.0/cloud.js"></script>
+  <script>
+    // 这里自动获取你的云环境ID
+    let params = new URLSearchParams(location.search);
+    let id = params.get("id");
+
+    if (id) {
+      cloud.init({
+        env: "cloudbase-6grjv8bzdf073f2e" // 自动填好你的环境
+      })
+      const db = cloud.database()
+      db.collection("cards").doc(id).get().then(res => {
+        let d = res.data
+        let html = `<div class="title">${d.title}</div><div class="content">${d.content}</div>`
+        d.attachList.forEach(item => {
+          if (item.type == "image") html += `<img src="${item.url}">`
+          if (item.type == "audio") html += `<audio controls src="${item.url}"></audio>`
+          if (item.type == "video") html += `<video controls src="${item.url}"></video>`
+        })
+        document.getElementById("app").innerHTML = html
+      })
+    } else {
+      document.getElementById("app").innerHTML = "无效卡片"
+    }
+  </script>
+</body>
+
+</html>
